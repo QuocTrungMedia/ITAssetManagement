@@ -1,0 +1,107 @@
+﻿@model ITAssetManagement.Models.Employee
+
+@{
+    ViewData["Title"] = "Xóa nhân viên";
+    var hasComputers = Model.Computers.Any();
+}
+
+<div class="manage-page">
+    <div class="manage-header">
+        <p class="eyebrow">NHÂN VIÊN</p>
+        <h1>Xóa nhân viên</h1>
+        <p class="text-secondary mb-0">
+            Kiểm tra thông tin trước khi thực hiện.
+        </p>
+    </div>
+
+    <div class="manage-card">
+        @if (hasComputers)
+        {
+            <div class="delete-warning">
+                <strong>Không thể xóa nhân viên này.</strong>
+
+                <p class="mb-2 mt-2">
+                    Nhân viên <strong>@Model.FullName</strong>
+                    đang được cấp @Model.Computers.Count máy tính.
+                    Bạn cần thu hồi máy trước khi xóa.
+                </p>
+
+                @foreach (var computer in Model.Computers)
+                {
+                    <a asp-controller="Computers"
+                       asp-action="Edit"
+                       asp-route-id="@computer.ComputerID"
+                       class="d-block text-decoration-none">
+                        → @computer.ComputerName
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="delete-warning">
+                <strong>Cảnh báo:</strong>
+                Bạn có chắc chắn muốn xóa nhân viên
+                <strong>@Model.FullName</strong> không?
+            </div>
+        }
+
+        <div class="details-grid">
+            <div class="detail-box">
+                <span class="detail-label">Mã nhân viên</span>
+                <span class="detail-value">#@Model.EmployeeID</span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Họ và tên</span>
+                <span class="detail-value">@Model.FullName</span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Phòng ban</span>
+                <span class="detail-value">
+                    @(Model.Department ?? "Chưa cập nhật")
+                </span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Email</span>
+                <span class="detail-value">
+                    @(Model.Email ?? "Chưa cập nhật")
+                </span>
+            </div>
+        </div>
+
+        @if (hasComputers)
+        {
+            <div class="form-actions">
+                <a asp-controller="Computers"
+                   asp-action="Index"
+                   asp-route-search="@Model.FullName"
+                   class="btn btn-primary">
+                    Xem máy đang sử dụng
+                </a>
+
+                <a asp-action="Index" class="btn btn-light border">
+                    Quay lại
+                </a>
+            </div>
+        }
+        else
+        {
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="EmployeeID" />
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">
+                        Xác nhận xóa
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-light border">
+                        Không, quay lại
+                    </a>
+                </div>
+            </form>
+        }
+    </div>
+</div>

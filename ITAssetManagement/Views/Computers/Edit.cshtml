@@ -1,0 +1,67 @@
+﻿@model ITAssetManagement.Models.Computer
+
+@{
+    ViewData["Title"] = "Xóa máy tính";
+}
+
+<div class="manage-page">
+    <div class="manage-header">
+        <p class="eyebrow">MÁY TÍNH</p>
+        <h1>Xóa máy tính</h1>
+        <p class="text-secondary mb-0">
+            Kiểm tra thông tin trước khi xóa thiết bị.
+        </p>
+    </div>
+
+    <div class="manage-card">
+        <div class="delete-warning">
+            <strong>Cảnh báo:</strong>
+            Bạn có chắc chắn muốn xóa máy
+            <strong>@Model.ComputerName</strong> không?
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-box">
+                <span class="detail-label">Tên máy tính</span>
+                <span class="detail-value">@Model.ComputerName</span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Hệ điều hành</span>
+                <span class="detail-value">
+                    @(Model.OperatingSystem ?? "Chưa cập nhật")
+                </span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Trạng thái</span>
+                <span class="detail-value">
+                    @(Model.Status == "Active"
+                        ? "Hoạt động"
+                        : "Không hoạt động")
+                </span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Nhân viên sử dụng</span>
+                <span class="detail-value">
+                    @(Model.Employee?.FullName ?? "Chưa cấp phát")
+                </span>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="ComputerID" />
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">
+                    Xác nhận xóa
+                </button>
+
+                <a asp-action="Index" class="btn btn-light border">
+                    Không, quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

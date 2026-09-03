@@ -1,0 +1,335 @@
+﻿@model IEnumerable<ITAssetManagement.Models.Computer>
+
+@{
+    ViewData["Title"] = "Quản lý máy tính";
+
+    var computers = Model.ToList();
+    var totalComputers = computers.Count;
+    var assignedComputers = computers.Count(x => x.EmployeeID != null);
+    var availableComputers = computers.Count(x => x.EmployeeID == null);
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show app-alert"
+         role="alert">
+
+        <strong>Thành công!</strong>
+        @TempData["SuccessMessage"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show app-alert"
+         role="alert">
+
+        <strong>Có lỗi!</strong>
+        @TempData["ErrorMessage"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+<div class="page-header d-flex flex-column flex-md-row
+            justify-content-between align-items-md-center gap-3">
+
+    <div>
+        <p class="eyebrow">IT ASSET MANAGEMENT</p>
+
+        <h1 class="fw-bold mb-2">
+            Quản lý máy tính
+        </h1>
+
+        <p class="text-secondary mb-0">
+            Quản lý thiết bị, hệ điều hành và tình trạng cấp phát.
+        </p>
+    </div>
+
+    <a asp-action="Create"
+       class="btn btn-primary btn-lg">
+        + Thêm máy tính
+    </a>
+</div>
+
+<form asp-action="Index"
+      method="get"
+      class="search-panel mb-4">
+
+    <div class="row g-3 align-items-end">
+        <div class="col-xl-4 col-lg-6">
+            <label class="search-label">
+                Tìm kiếm máy tính
+            </label>
+
+            <div class="search-input">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       name="search"
+                       value="@ViewBag.Search"
+                       class="form-control"
+                       placeholder="Tên máy, hệ điều hành, nhân viên..." />
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-lg-3">
+            <label class="search-label">
+                Trạng thái
+            </label>
+
+            <select name="status" class="form-select">
+                <option value="">Tất cả</option>
+
+                @if (ViewBag.SelectedStatus == "Active")
+                {
+                    <option value="Active" selected>
+                        Hoạt động
+                    </option>
+                }
+                else
+                {
+                    <option value="Active">
+                        Hoạt động
+                    </option>
+                }
+
+                @if (ViewBag.SelectedStatus == "Inactive")
+                {
+                    <option value="Inactive" selected>
+                        Không hoạt động
+                    </option>
+                }
+                else
+                {
+                    <option value="Inactive">
+                        Không hoạt động
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-xl-3 col-lg-3">
+            <label class="search-label">
+                Cấp phát
+            </label>
+
+            <select name="assignment" class="form-select">
+                <option value="">Tất cả máy tính</option>
+
+                @if (ViewBag.SelectedAssignment == "assigned")
+                {
+                    <option value="assigned" selected>
+                        Đã cấp phát
+                    </option>
+                }
+                else
+                {
+                    <option value="assigned">
+                        Đã cấp phát
+                    </option>
+                }
+
+                @if (ViewBag.SelectedAssignment == "unassigned")
+                {
+                    <option value="unassigned" selected>
+                        Chưa cấp phát
+                    </option>
+                }
+                else
+                {
+                    <option value="unassigned">
+                        Chưa cấp phát
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-xl-3">
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary">
+                    Tìm kiếm
+                </button>
+
+                <a asp-action="Index" class="btn btn-reset">
+                    Đặt lại
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <p class="stat-label">Tổng máy tính</p>
+            <p class="stat-number">@totalComputers</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <p class="stat-label">Đã cấp phát</p>
+            <p class="stat-number">@assignedComputers</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <p class="stat-label">Chưa cấp phát</p>
+            <p class="stat-number">@availableComputers</p>
+        </div>
+    </div>
+</div>
+
+<div class="page-card">
+    @if (computers.Count == 0)
+    {
+        <div class="empty-state">
+            <h4>Chưa có máy tính</h4>
+
+            <p>
+                Hãy thêm thiết bị đầu tiên vào hệ thống.
+            </p>
+
+            <a asp-action="Create"
+               class="btn btn-primary">
+                Thêm máy tính
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Máy tính</th>
+                        <th>Hệ điều hành</th>
+                        <th>Trạng thái</th>
+                        <th>Nhân viên sử dụng</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in computers)
+                    {
+                        <tr>
+                            <td>
+                                <div class="employee-info">
+                                    <div class="employee-avatar">
+                                        PC
+                                    </div>
+
+                                    <div>
+                                        <div class="fw-semibold">
+                                            @item.ComputerName
+                                        </div>
+
+                                        <small class="text-secondary">
+                                            Mã thiết bị: #@item.ComputerID
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                @if (string.IsNullOrWhiteSpace(
+                               item.OperatingSystem))
+                                {
+                                    <span class="text-secondary">
+                                        Chưa cập nhật
+                                    </span>
+                                }
+                                else
+                                {
+                                    @item.OperatingSystem
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.Status == "Active")
+                                {
+                                    <span class="badge bg-success">
+                                        Đang hoạt động
+                                    </span>
+                                }
+                                else if (item.Status == "Repairing")
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        Đang sửa chữa
+                                    </span>
+                                }
+                                else if (item.Status == "Retired")
+                                {
+                                    <span class="badge bg-secondary">
+                                        Đã thanh lý
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info text-dark">
+                                        @item.Status
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.Employee == null)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        Chưa cấp phát
+                                    </span>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <div class="fw-semibold">
+                                            @item.Employee.FullName
+                                        </div>
+
+                                        <small class="text-secondary">
+                                            @(string.IsNullOrWhiteSpace(
+                                                item.Employee.Department)
+                                                ? "Chưa có phòng ban"
+                                                : item.Employee.Department)
+                                        </small>
+                                    </div>
+                                }
+                            </td>
+
+                            <td class="text-nowrap">
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.ComputerID"
+                                   class="btn btn-sm btn-outline-warning">
+                                    Sửa
+                                </a>
+
+                                <a asp-action="Details"
+                                   asp-route-id="@item.ComputerID"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Chi tiết
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@item.ComputerID"
+                                   class="btn btn-sm btn-outline-danger">
+                                    Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

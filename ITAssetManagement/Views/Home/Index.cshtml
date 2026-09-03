@@ -1,0 +1,227 @@
+﻿@model ITAssetManagement.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Tổng quan";
+}
+
+<div class="page-header d-flex flex-column flex-lg-row
+            justify-content-between align-items-lg-center gap-3">
+
+    <div>
+        <p class="eyebrow">IT ASSET MANAGEMENT</p>
+        <h1 class="fw-bold mb-2">Tổng quan hệ thống</h1>
+        <p class="text-secondary mb-0">
+            Theo dõi nhân viên, máy tính và tình trạng cấp phát thiết bị.
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-controller="Employees"
+           asp-action="Create"
+           class="btn btn-outline-primary">
+            + Nhân viên
+        </a>
+
+        <a asp-controller="Computers"
+           asp-action="Create"
+           class="btn btn-primary">
+            + Máy tính
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <p class="stat-label">Tổng nhân viên</p>
+            <p class="stat-number">@Model.TotalEmployees</p>
+
+            <a asp-controller="Employees"
+               asp-action="Index"
+               class="text-decoration-none">
+                Xem danh sách →
+            </a>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <p class="stat-label">Tổng máy tính</p>
+            <p class="stat-number">@Model.TotalComputers</p>
+
+            <a asp-controller="Computers"
+               asp-action="Index"
+               class="text-decoration-none">
+                Xem danh sách →
+            </a>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <p class="stat-label">Đã cấp phát</p>
+            <p class="stat-number">@Model.AssignedComputers</p>
+            <span class="text-secondary">Máy đã có người sử dụng</span>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <p class="stat-label">Nhân viên chưa có máy</p>
+
+            <p class="stat-number">
+                @Model.EmployeesWithoutComputer
+            </p>
+
+            <p class="text-secondary mb-0">
+                Đang chờ cấp phát thiết bị
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="page-card h-100">
+            <div class="p-4 border-bottom">
+                <div class="d-flex justify-content-between
+                            align-items-center">
+                    <h4 class="fw-bold mb-0">Nhân viên gần đây</h4>
+
+                    <a asp-controller="Employees"
+                       asp-action="Index"
+                       class="text-decoration-none">
+                        Xem tất cả
+                    </a>
+                </div>
+            </div>
+
+            @if (!Model.RecentEmployees.Any())
+            {
+                <div class="empty-state">
+                    Chưa có nhân viên.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Họ và tên</th>
+                                <th>Phòng ban</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var employee
+                           in Model.RecentEmployees)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">
+                                        @employee.FullName
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(
+                                            employee.Department)
+                                            ? "Chưa cập nhật"
+                                            : employee.Department)
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a asp-controller="Employees"
+                                           asp-action="Details"
+                                           asp-route-id="@employee.EmployeeID"
+                                           class="btn btn-sm
+                                                  btn-outline-primary">
+                                            Xem
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="page-card h-100">
+            <div class="p-4 border-bottom">
+                <div class="d-flex justify-content-between
+                            align-items-center">
+                    <h4 class="fw-bold mb-0">Máy tính gần đây</h4>
+
+                    <a asp-controller="Computers"
+                       asp-action="Index"
+                       class="text-decoration-none">
+                        Xem tất cả
+                    </a>
+                </div>
+            </div>
+
+            @if (!Model.RecentComputers.Any())
+            {
+                <div class="empty-state">
+                    Chưa có máy tính.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tên máy</th>
+                                <th>Người sử dụng</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var computer
+                           in Model.RecentComputers)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            @computer.ComputerName
+                                        </div>
+
+                                        <small class="text-secondary">
+                                            @computer.OperatingSystem
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @(computer.Employee?.FullName
+                                            ?? "Chưa cấp phát")
+                                    </td>
+
+                                    <td>
+                                        @if (computer.EmployeeID == null)
+                                        {
+                                            <span class="badge bg-warning
+                                                         text-dark">
+                                                Chưa cấp phát
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">
+                                                Đã cấp phát
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

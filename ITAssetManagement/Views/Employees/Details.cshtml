@@ -1,0 +1,74 @@
+﻿@model ITAssetManagement.Models.Employee
+
+@{
+    ViewData["Title"] = "Chi tiết nhân viên";
+}
+
+<div class="manage-page">
+    <div class="manage-header">
+        <p class="eyebrow">NHÂN VIÊN</p>
+        <h1>Chi tiết nhân viên</h1>
+        <p class="text-secondary mb-0">
+            Thông tin hồ sơ nhân viên trong hệ thống.
+        </p>
+    </div>
+
+    <div class="manage-card">
+        <div class="details-grid">
+            <div class="detail-box">
+                <span class="detail-label">Mã nhân viên</span>
+                <span class="detail-value">#@Model.EmployeeID</span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Họ và tên</span>
+                <span class="detail-value">@Model.FullName</span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Phòng ban</span>
+                <span class="detail-value">
+                    @(string.IsNullOrWhiteSpace(Model.Department)
+                        ? "Chưa cập nhật"
+                        : Model.Department)
+                </span>
+            </div>
+
+            <div class="detail-box">
+                <span class="detail-label">Số điện thoại</span>
+                <span class="detail-value">
+                    @(string.IsNullOrWhiteSpace(Model.Phone)
+                        ? "Chưa cập nhật"
+                        : Model.Phone)
+                </span>
+            </div>
+
+            <div class="detail-box form-group-full">
+                <span class="detail-label">Email</span>
+
+                @if (string.IsNullOrWhiteSpace(Model.Email))
+                {
+                    <span class="detail-value">Chưa cập nhật</span>
+                }
+                else
+                {
+                    <a href="mailto:@Model.Email" class="detail-value">
+                        @Model.Email
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a asp-action="Edit"
+               asp-route-id="@Model.EmployeeID"
+               class="btn btn-warning">
+                Sửa thông tin
+            </a>
+
+            <a asp-action="Index" class="btn btn-light border">
+                Quay lại
+            </a>
+        </div>
+    </div>
+</div>

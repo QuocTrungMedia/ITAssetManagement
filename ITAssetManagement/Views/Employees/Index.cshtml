@@ -1,0 +1,268 @@
+﻿@model IEnumerable<ITAssetManagement.Models.Employee>
+
+@{
+    ViewData["Title"] = "Quản lý nhân viên";
+
+    var employees = Model.ToList();
+    var totalEmployees = employees.Count;
+    var employeesWithEmail = employees.Count(x =>
+        !string.IsNullOrWhiteSpace(x.Email));
+
+    var totalDepartments = employees
+        .Where(x => !string.IsNullOrWhiteSpace(x.Department))
+        .Select(x => x.Department)
+        .Distinct()
+        .Count();
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+<div class="page-header d-flex flex-column flex-md-row
+            justify-content-between align-items-md-center gap-3">
+
+    <div>
+        <p class="eyebrow">IT ASSET MANAGEMENT</p>
+        <h1 class="fw-bold mb-2">Quản lý nhân viên</h1>
+        <p class="text-secondary mb-0">
+            Quản lý thông tin nhân viên và việc cấp phát thiết bị.
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary btn-lg">
+        + Thêm nhân viên
+    </a>
+</div>
+<form asp-action="Index"
+      method="get"
+      class="search-panel mb-4">
+
+    <div class="row g-3 align-items-end">
+        <div class="col-lg-6">
+            <label class="search-label">
+                Tìm kiếm nhân viên
+            </label>
+
+            <div class="search-input">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       name="search"
+                       value="@ViewBag.Search"
+                       class="form-control"
+                       placeholder="Nhập tên, email hoặc số điện thoại..." />
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <label class="search-label">
+                Phòng ban
+            </label>
+
+            <select name="department" class="form-select">
+                <option value="">Tất cả phòng ban</option>
+
+                @foreach (var department in ViewBag.Departments)
+                {
+                    @if (department == ViewBag.SelectedDepartment)
+                    {
+                        <option value="@department" selected>
+                            @department
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@department">
+                            @department
+                        </option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary">
+                    Tìm kiếm
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-reset">
+                    Đặt lại
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <p class="stat-label">Tổng nhân viên</p>
+            <p class="stat-number">@totalEmployees</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <p class="stat-label">Đã cập nhật email</p>
+            <p class="stat-number">@employeesWithEmail</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <p class="stat-label">Số phòng ban</p>
+            <p class="stat-number">@totalDepartments</p>
+        </div>
+    </div>
+</div>
+
+<div class="page-card">
+    @if (!employees.Any())
+    {
+        <div class="empty-state">
+            <h4>Chưa có nhân viên</h4>
+            <p>Hãy thêm nhân viên đầu tiên vào hệ thống.</p>
+
+            <a asp-action="Create" class="btn btn-primary">
+                Thêm nhân viên
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nhân viên</th>
+                        <th>Phòng ban</th>
+                        <th>Thiết bị được cấp</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in employees)
+                    {
+                        <tr>
+                            <td>
+                                <div class="employee-info">
+                                    <div class="employee-avatar">
+                                        @item.FullName.Substring(0, 1).ToUpper()
+                                    </div>
+
+                                    <div>
+                                        <div class="fw-semibold">
+                                            @item.FullName
+                                        </div>
+                                        <small class="text-secondary">
+                                            Mã nhân viên: #@item.EmployeeID
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="soft-badge">
+                                    @(string.IsNullOrWhiteSpace(item.Department)
+                                        ? "Chưa cập nhật"
+                                        : item.Department)
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (item.Computers.Any())
+                                {
+                                    <div class="mb-1">
+                                        <span class="badge bg-success">
+                                            Đã cấp @item.Computers.Count máy
+                                        </span>
+                                    </div>
+
+                                    @foreach (var computer in item.Computers)
+                                    {
+                                        <a asp-controller="Computers"
+                                           asp-action="Details"
+                                           asp-route-id="@computer.ComputerID"
+                                           class="small text-decoration-none d-block">
+                                            @computer.ComputerName
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        Chưa có máy
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (string.IsNullOrWhiteSpace(item.Email))
+                                {
+                                    <span class="text-secondary">
+                                        Chưa cập nhật
+                                    </span>
+                                }
+                                else
+                                {
+                                    <a href="mailto:@item.Email">
+                                        @item.Email
+                                    </a>
+                                }
+                            </td>
+
+                            <td>
+                                @(string.IsNullOrWhiteSpace(item.Phone)
+                                    ? "Chưa cập nhật"
+                                    : item.Phone)
+                            </td>
+
+                            <td class="text-nowrap">
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.EmployeeID"
+                                   class="btn btn-sm btn-outline-warning">
+                                    Sửa
+                                </a>
+
+                                <a asp-action="Details"
+                                   asp-route-id="@item.EmployeeID"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Chi tiết
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@item.EmployeeID"
+                                   class="btn btn-sm btn-outline-danger">
+                                    Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

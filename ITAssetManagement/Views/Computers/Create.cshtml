@@ -1,0 +1,87 @@
+﻿@model ITAssetManagement.Models.Computer
+
+@{
+    ViewData["Title"] = "Thêm máy tính";
+}
+
+<div class="manage-page">
+    <div class="manage-header">
+        <p class="eyebrow">MÁY TÍNH</p>
+        <h1>Thêm máy tính</h1>
+        <p class="text-secondary mb-0">
+            Thêm máy tính mới và cấp phát cho nhân viên.
+        </p>
+    </div>
+
+    <div class="manage-card">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger"></div>
+
+            <div class="form-grid">
+                <div class="form-group-full">
+                    <label asp-for="ComputerName" class="form-label"></label>
+                    <input asp-for="ComputerName"
+                           class="form-control"
+                           placeholder="Ví dụ: PC-IT-001" />
+                    <span asp-validation-for="ComputerName"></span>
+                </div>
+
+                <div>
+                    <label asp-for="EmployeeID" class="form-label"></label>
+
+                    <select asp-for="EmployeeID"
+                            asp-items="ViewBag.EmployeeID"
+                            class="form-select">
+                        <option value="">-- Chưa cấp phát --</option>
+                    </select>
+
+                    <span asp-validation-for="EmployeeID"></span>
+                </div>
+
+                <div>
+                    <label asp-for="OperatingSystem" class="form-label"></label>
+
+                    <select asp-for="OperatingSystem" class="form-select">
+                        <option value="">-- Chọn hệ điều hành --</option>
+                        <option value="Windows 11 Pro">Windows 11 Pro</option>
+                        <option value="Windows 11 Home">Windows 11 Home</option>
+                        <option value="Windows 10 Pro">Windows 10 Pro</option>
+                        <option value="Ubuntu 24.04 LTS">Ubuntu 24.04 LTS</option>
+                        <option value="macOS">macOS</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+
+                    <span asp-validation-for="OperatingSystem"></span>
+                </div>
+
+                <div class="form-group-full">
+                    <label asp-for="Status" class="form-label"></label>
+
+                    <select asp-for="Status" class="form-select">
+                        <option value="Active">Hoạt động</option>
+                        <option value="Inactive">Không hoạt động</option>
+                    </select>
+
+                    <span asp-validation-for="Status"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Thêm máy tính
+                </button>
+
+                <a asp-action="Index" class="btn btn-light border">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
